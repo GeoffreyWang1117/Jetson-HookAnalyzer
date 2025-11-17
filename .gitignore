@@ -1,0 +1,63 @@
+# Build directories
+build/
+cmake-build-*/
+*.o
+*.a
+*.so
+*.dylib
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+*.egg-info/
+
+# Logs
+*.log
+logs/
+
+# Models
+models/*.trt
+models/*.onnx
+models/*.engine
+!models/.gitkeep
+
+# Data
+data/
+datasets/
+*.jpg
+*.png
+*.mp4
+
+# Profiling
+*.nvprof
+*.qdrep
+*.nsys-rep
+nsys-report-*
+
+# Docker
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test outputs
+test_results/
+benchmarks/results/
+
+# Temporary files
+tmp/
+temp/
+*.tmp

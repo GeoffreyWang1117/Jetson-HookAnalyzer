@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # Development environment (x86_64)
+  hookanalyzer-dev:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: dev-x86
+    image: hookanalyzer:dev-x86
+    container_name: hookanalyzer-dev
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ../:/app
+      - ../models:/app/models
+      - ../data:/app/data
+    ports:
+      - "8000:8000"
+      - "8888:8888"  # Jupyter
+    command: /bin/bash
+    stdin_open: true
+    tty: true
+
+  # Jetson development environment
+  hookanalyzer-jetson-dev:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: jetson-dev
+    image: hookanalyzer:jetson-dev
+    container_name: hookanalyzer-jetson-dev
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    volumes:
+      - ../:/workspace
+      - ../models:/workspace/models
+      - ../data:/workspace/data
+    ports:
+      - "8000:8000"
+      - "8888:8888"
+    devices:
+      - /dev/nvhost-ctrl
+      - /dev/nvhost-ctrl-gpu
+      - /dev/nvhost-prof-gpu
+      - /dev/nvmap
+      - /dev/nvhost-gpu
+      - /dev/nvhost-as-gpu
+    command: /bin/bash
+    stdin_open: true
+    tty: true
+
+  # Monitoring - Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: hookanalyzer-prometheus
+    volumes:
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+
+  # Monitoring - Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: hookanalyzer-grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ../monitoring/dashboard:/etc/grafana/provisioning/dashboards
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
+volumes:
+  prometheus-data:
+  grafana-data:
