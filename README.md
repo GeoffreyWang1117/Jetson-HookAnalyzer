@@ -1,10 +1,12 @@
 # CUDA Hook Analyzer & Intelligent Inference Scheduler
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CUDA](https://img.shields.io/badge/CUDA-11.4+-green.svg)](https://developer.nvidia.com/cuda-toolkit)
+[![CUDA](https://img.shields.io/badge/CUDA-12.6-green.svg)](https://developer.nvidia.com/cuda-toolkit)
 [![Platform](https://img.shields.io/badge/Platform-Jetson%20Orin%20Nano-76B900.svg)](https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-orin/)
 
 > A lightweight CUDA-level performance profiling and intelligent multi-model inference scheduling framework for edge devices.
+
+[中文文档](README_CN.md) | English
 
 ## 🎯 Project Overview
 
@@ -16,19 +18,19 @@
 
 ## 🌟 Highlights
 
-**Production-Grade Results:**
+### Production-Grade Results
 - ⚡ **114.67 FPS** YOLOv8 inference on Jetson Orin Nano (3.8x real-time)
-- 🎯 **8.72ms latency** with P99 < 14ms (production-stable)
-- 💾 **7.4 MB** GPU memory footprint (highly optimized)
+- 🎯 **8.72ms average latency** with P99 < 14ms (production-stable)
+- 💾 **7.4 MB GPU memory footprint** (highly optimized)
 - 🔧 **350+ LOC** modular TensorRT C++ wrapper
 
-**Technical Depth:**
+### Technical Depth
 - Deep dive into CUDA kernel optimization (occupancy analysis, memory coalescing)
 - TensorRT engine integration with FP16 precision
 - Async inference pipeline with CUDA streams
 - Performance profiling and benchmarking framework
 
-**Demonstrated Skills:**
+### Demonstrated Skills
 - C++17, CUDA 12.6, TensorRT 10.3, CMake
 - Edge AI deployment on resource-constrained devices
 - Performance analysis and optimization methodologies
@@ -201,7 +203,7 @@ docker run --gpus all -p 8000:8000 \
 | **Element-wise Ops** | ✅ Passed | - |
 | **Activations (ReLU)** | ✅ Passed | - |
 
-*Full results: [EXPERIMENT3_RESULTS.md](EXPERIMENT3_RESULTS.md) | [VERIFICATION_REPORT.md](VERIFICATION_REPORT.md)*
+*Full results: [EXPERIMENT3_RESULTS.md](docs/experiments/EXPERIMENT3_RESULTS.md) | [VERIFICATION_REPORT.md](docs/experiments/VERIFICATION_REPORT.md)*
 
 ## 🔬 Experimental Results
 
@@ -213,7 +215,7 @@ docker run --gpus all -p 8000:8000 \
   - 16×16 tiles: 100% occupancy (6 blocks/SM)
   - 32×32 tiles: 67% occupancy (1 block/SM) → 20% slower
 - **Result:** Documented critical optimization insights for edge GPUs
-- **Report:** [EXPERIMENT1_REPORT.md](EXPERIMENT1_REPORT.md)
+- **Report:** [EXPERIMENT1_REPORT.md](docs/experiments/EXPERIMENT1_REPORT.md)
 
 #### Experiment 3: Real Model Integration with TensorRT
 - **Goal:** Integrate YOLOv8 object detection model using TensorRT
@@ -225,7 +227,7 @@ docker run --gpus all -p 8000:8000 \
   - ✅ Sync/async inference support
   - ✅ Comprehensive benchmarking
 - **Status:** Production-ready, extensible architecture
-- **Report:** [EXPERIMENT3_RESULTS.md](EXPERIMENT3_RESULTS.md)
+- **Report:** [EXPERIMENT3_RESULTS.md](docs/experiments/EXPERIMENT3_RESULTS.md)
 
 ### 📋 Planned Experiments
 
@@ -237,14 +239,15 @@ docker run --gpus all -p 8000:8000 \
 ## 📚 Documentation
 
 ### Experimental Reports (Completed)
-- [Experiment 3: TensorRT Integration Results](EXPERIMENT3_RESULTS.md) - YOLOv8 inference at 114.67 FPS
-- [Experiment 1: GEMM Optimization Analysis](EXPERIMENT1_REPORT.md) - Occupancy vs tile size insights
-- [Verification Report](VERIFICATION_REPORT.md) - Initial project validation
-- [Final Summary](FINAL_SUMMARY.md) - Project completion overview
+- [Experiment 3: TensorRT Integration Results](docs/experiments/EXPERIMENT3_RESULTS.md) - YOLOv8 inference at 114.67 FPS
+- [Experiment 1: GEMM Optimization Analysis](docs/experiments/EXPERIMENT1_REPORT.md) - Occupancy vs tile size insights
+- [Verification Report](docs/experiments/VERIFICATION_REPORT.md) - Initial project validation
+- [Final Summary](docs/experiments/FINAL_SUMMARY.md) - Project completion overview
 
 ### Quick References
-- [Video Recording Guide](VIDEO_RECORDING_GUIDE.md) - Demo video creation
-- [Experiment Roadmap](EXPERIMENT_ROADMAP.md) - Future experiment plans
+- [Video Recording Guide](docs/experiments/VIDEO_RECORDING_GUIDE.md) - Demo video creation
+- [Experiment Roadmap](docs/experiments/EXPERIMENT_ROADMAP.md) - Future experiment plans
+- [Demo Video](docs/media/hookanalyzer_demo.mp4) - Project demonstration
 
 ## 🤝 Contributing
 
@@ -262,9 +265,10 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file.
 
 ## 📧 Contact
 
-- **Author**: Geoffrey
-- **Project**: AI Infrastructure & Inference Optimization
-- **Platform**: Jetson Orin Nano @ 100.111.167.60
+- **Author:** Geoffrey
+- **Project:** AI Infrastructure & Inference Optimization
+- **Platform:** Jetson Orin Nano @ 100.111.167.60
+- **GitHub:** [GeoffreyWang1117/Jetson-HookAnalyzer](https://github.com/GeoffreyWang1117/Jetson-HookAnalyzer)
 
 ---
 

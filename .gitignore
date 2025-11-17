@@ -40,6 +40,12 @@ datasets/
 *.png
 *.mp4
 
+# Exception: Keep documentation media files
+!docs/media/*.jpg
+!docs/media/*.png
+!docs/media/*.mp4
+!docs/media/*.txt
+
 # Profiling
 *.nvprof
 *.qdrep
