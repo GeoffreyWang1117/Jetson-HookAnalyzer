@@ -1,5 +1,6 @@
 add_library(optimized_kernels SHARED
     kernels.cu
+    gemm_optimized_v2.cu
 )
 
 target_include_directories(optimized_kernels PUBLIC

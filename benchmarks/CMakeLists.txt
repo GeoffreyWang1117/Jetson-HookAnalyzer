@@ -14,3 +14,35 @@ target_link_libraries(benchmark_kernels
     ${CUDA_LIBRARIES}
     ${CUDA_CUBLAS_LIBRARIES}
 )
+
+# GEMM analysis tool
+add_executable(gemm_analysis
+    gemm_analysis.cpp
+)
+
+target_include_directories(gemm_analysis PRIVATE
+    ${CMAKE_SOURCE_DIR}/core
+    ${CUDA_INCLUDE_DIRS}
+)
+
+target_link_libraries(gemm_analysis
+    optimized_kernels
+    ${CUDA_LIBRARIES}
+    ${CUDA_CUBLAS_LIBRARIES}
+)
+
+# GEMM comparison tool
+add_executable(gemm_compare
+    gemm_compare.cpp
+)
+
+target_include_directories(gemm_compare PRIVATE
+    ${CMAKE_SOURCE_DIR}/core
+    ${CUDA_INCLUDE_DIRS}
+)
+
+target_link_libraries(gemm_compare
+    optimized_kernels
+    ${CUDA_LIBRARIES}
+    ${CUDA_CUBLAS_LIBRARIES}
+)

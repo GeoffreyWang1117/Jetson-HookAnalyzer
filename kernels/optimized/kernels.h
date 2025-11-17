@@ -12,10 +12,30 @@ cudaError_t gemmFloat(const float* A, const float* B, float* C,
                       int M, int N, int K,
                       cudaStream_t stream = 0);
 
-// Optimized GEMM with shared memory
+// Optimized GEMM with shared memory (16x16 tile)
 cudaError_t gemmFloatOptimized(const float* A, const float* B, float* C,
                                int M, int N, int K,
                                cudaStream_t stream = 0);
+
+// Optimized GEMM v2 - 32x32 tile
+cudaError_t gemmFloatOptimized32(const float* A, const float* B, float* C,
+                                 int M, int N, int K,
+                                 cudaStream_t stream = 0);
+
+// Optimized GEMM v2 - 32x32 tile with vectorized loads
+cudaError_t gemmFloatOptimized32Vectorized(const float* A, const float* B, float* C,
+                                           int M, int N, int K,
+                                           cudaStream_t stream = 0);
+
+// Optimized GEMM v2 - 64x64 tile
+cudaError_t gemmFloatOptimized64(const float* A, const float* B, float* C,
+                                 int M, int N, int K,
+                                 cudaStream_t stream = 0);
+
+// Optimized GEMM v2 - 32x32 tile with double buffering
+cudaError_t gemmFloatOptimized32DoubleBuffer(const float* A, const float* B, float* C,
+                                             int M, int N, int K,
+                                             cudaStream_t stream = 0);
 
 // Element-wise operations
 cudaError_t addFloat(const float* A, const float* B, float* C,

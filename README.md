@@ -14,6 +14,26 @@
 - **GPU memory optimization** with fragmentation analysis
 - **Intelligent scheduling** balancing latency and throughput
 
+## 🌟 Highlights
+
+**Production-Grade Results:**
+- ⚡ **114.67 FPS** YOLOv8 inference on Jetson Orin Nano (3.8x real-time)
+- 🎯 **8.72ms latency** with P99 < 14ms (production-stable)
+- 💾 **7.4 MB** GPU memory footprint (highly optimized)
+- 🔧 **350+ LOC** modular TensorRT C++ wrapper
+
+**Technical Depth:**
+- Deep dive into CUDA kernel optimization (occupancy analysis, memory coalescing)
+- TensorRT engine integration with FP16 precision
+- Async inference pipeline with CUDA streams
+- Performance profiling and benchmarking framework
+
+**Demonstrated Skills:**
+- C++17, CUDA 12.6, TensorRT 10.3, CMake
+- Edge AI deployment on resource-constrained devices
+- Performance analysis and optimization methodologies
+- Production-ready code architecture
+
 ## 🏗️ Architecture
 
 ```
@@ -68,12 +88,13 @@
 
 | Component | Technology |
 |-----------|------------|
-| **Core** | C++17, CUDA 11.4+, CMake 3.18+ |
-| **Inference** | TensorRT 8.x, ONNX Runtime 1.12+ |
+| **Core** | C++17, CUDA 12.6, CMake 3.18+ |
+| **Inference** | TensorRT 10.3.0, ONNX Runtime (planned) |
 | **Profiling** | CUPTI, Nsight Systems |
-| **API** | Python 3.8+, FastAPI, gRPC |
-| **Monitoring** | Prometheus, Grafana |
+| **API** | Python 3.10+, FastAPI |
+| **Monitoring** | Prometheus, Grafana (planned) |
 | **Containerization** | Docker, NVIDIA Container Runtime |
+| **Platform** | Jetson Orin Nano (JetPack 6.x) |
 
 ## 📦 Directory Structure
 
@@ -105,28 +126,37 @@ HookAnalyzer/
 ### Prerequisites
 
 **Hardware:**
-- NVIDIA Jetson Orin Nano (or any CUDA-capable device)
-- 8GB+ RAM recommended
+- NVIDIA Jetson Orin Nano (verified platform)
+  - Ampere GPU architecture (SM 8.7)
+  - 8 Streaming Multiprocessors
+  - 7.6 GB LPDDR5 memory
+- Or any CUDA-capable device with Compute Capability 5.0+
 
 **Software:**
-- JetPack 5.1+ (for Jetson) or CUDA Toolkit 11.4+
-- Docker with NVIDIA Container Runtime
-- CMake 3.18+, GCC 9+
+- JetPack 6.x (CUDA 12.6, TensorRT 10.3.0)
+- CMake 3.18+, GCC 11+
+- Python 3.10+ (for model conversion scripts)
 
 ### Build from Source
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/HookAnalyzer.git
-cd HookAnalyzer
+git clone https://github.com/GeoffreyWang1117/Jetson-HookAnalyzer.git
+cd Jetson-HookAnalyzer
 
-# Build with CMake
+# Build with CMake (on Jetson)
 mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make -j$(nproc)
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.6/bin/nvcc \
+      ..
+make -j6
 
-# Run tests
-ctest --output-on-failure
+# Run kernel tests
+./examples/kernel_test
+
+# Run TensorRT inference test (if yolov8n.engine exists)
+export LD_LIBRARY_PATH=/usr/local/cuda-12.6/lib64:$LD_LIBRARY_PATH
+./examples/test_tensorrt ../yolov8n.engine
 ```
 
 ### Docker Deployment
@@ -143,22 +173,78 @@ docker run --gpus all -p 8000:8000 \
 
 ## 📊 Performance Benchmarks
 
-| Metric | Baseline | With HookAnalyzer | Improvement |
-|--------|----------|-------------------|-------------|
-| Multi-model Throughput | 45 FPS | 63 FPS | **+40%** |
-| GPU Memory Utilization | 62% | 87% | **+25%** |
-| End-to-End Latency | 28ms | 24ms | **-15%** |
-| Concurrent Models | 2 | 4 | **2x** |
+### Verified Results on Jetson Orin Nano
 
-*Tested on Jetson Orin Nano with YOLOv8n + ResNet50 + BERT-base*
+**Hardware:** Jetson Orin Nano (Ampere SM 8.7, 8 SMs, 7.6GB RAM)
+**Software:** CUDA 12.6, TensorRT 10.3.0
+
+#### YOLOv8n TensorRT Inference (Experiment 3) ✅
+
+| Metric | Result | Target | Status |
+|--------|--------|--------|--------|
+| **Throughput** | **114.67 FPS** | 30 FPS | **3.8x faster** ⭐ |
+| **Average Latency** | **8.72 ms** | 33 ms | **3.8x faster** ⭐ |
+| **Min Latency** | 6.44 ms | - | Best case |
+| **Max Latency** | 13.78 ms | - | P99 < 14ms |
+| **GPU Memory** | 7.4 MB | - | Highly efficient |
+
+**Model:** YOLOv8n (3.2M params, 8.7 GFLOPs)
+**Precision:** FP16
+**Input:** 640×640×3 RGB
+
+#### Custom CUDA Kernels (Verified) ✅
+
+| Kernel | Performance | vs cuBLAS/Reference |
+|--------|-------------|---------------------|
+| **GEMM (512×512)** | 146 GFLOPS | 68.6% cuBLAS |
+| **Memory Bandwidth** | 91.3 GB/s | Efficient |
+| **Element-wise Ops** | ✅ Passed | - |
+| **Activations (ReLU)** | ✅ Passed | - |
+
+*Full results: [EXPERIMENT3_RESULTS.md](EXPERIMENT3_RESULTS.md) | [VERIFICATION_REPORT.md](VERIFICATION_REPORT.md)*
+
+## 🔬 Experimental Results
+
+### ✅ Completed Experiments
+
+#### Experiment 1: GEMM Performance Analysis
+- **Goal:** Optimize matrix multiplication kernels for Jetson Orin Nano
+- **Key Finding:** Discovered occupancy vs. tile size tradeoff
+  - 16×16 tiles: 100% occupancy (6 blocks/SM)
+  - 32×32 tiles: 67% occupancy (1 block/SM) → 20% slower
+- **Result:** Documented critical optimization insights for edge GPUs
+- **Report:** [EXPERIMENT1_REPORT.md](EXPERIMENT1_REPORT.md)
+
+#### Experiment 3: Real Model Integration with TensorRT
+- **Goal:** Integrate YOLOv8 object detection model using TensorRT
+- **Implementation:** Complete C++ TensorRT wrapper (~350 LOC)
+- **Performance:** 114.67 FPS (8.72ms latency) - **3.8x faster than real-time**
+- **Features:**
+  - ✅ Engine loading and serialization
+  - ✅ GPU memory management
+  - ✅ Sync/async inference support
+  - ✅ Comprehensive benchmarking
+- **Status:** Production-ready, extensible architecture
+- **Report:** [EXPERIMENT3_RESULTS.md](EXPERIMENT3_RESULTS.md)
+
+### 📋 Planned Experiments
+
+- **Experiment 2:** Multi-model concurrent inference with scheduler integration
+- **Experiment 4:** INT8 quantization and calibration
+- **Experiment 5:** Video stream processing pipeline
+- **Experiment 6:** Multi-device distributed inference
 
 ## 📚 Documentation
 
-- [Installation Guide](docs/installation.md)
-- [Architecture Details](docs/architecture.md)
-- [API Reference](docs/api_reference.md)
-- [Custom Kernel Development](docs/custom_kernels.md)
-- [Deployment to Jetson](docs/jetson_deployment.md)
+### Experimental Reports (Completed)
+- [Experiment 3: TensorRT Integration Results](EXPERIMENT3_RESULTS.md) - YOLOv8 inference at 114.67 FPS
+- [Experiment 1: GEMM Optimization Analysis](EXPERIMENT1_REPORT.md) - Occupancy vs tile size insights
+- [Verification Report](VERIFICATION_REPORT.md) - Initial project validation
+- [Final Summary](FINAL_SUMMARY.md) - Project completion overview
+
+### Quick References
+- [Video Recording Guide](VIDEO_RECORDING_GUIDE.md) - Demo video creation
+- [Experiment Roadmap](EXPERIMENT_ROADMAP.md) - Future experiment plans
 
 ## 🤝 Contributing
 
