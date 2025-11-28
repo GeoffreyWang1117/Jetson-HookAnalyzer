@@ -67,3 +67,41 @@ benchmarks/results/
 tmp/
 temp/
 *.tmp
+
+# clang-tidy and code analysis
+.clang-tidy
+compile_commands.json
+*.gcda
+*.gcno
+*.gcov
+
+# IDE specific
+.vscode/settings.json
+.vscode/launch.json
+*.code-workspace
+
+# Python compiled
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+# TensorRT specific
+*.engine
+*.plan
+*.trt
+
+# Backup files
+*~
+*.bak
+*.swp
+*.swo
+
+# Test results
+test_results/
+*.xml
+junit_*.xml
+
+# Core dumps
+core
+core.*

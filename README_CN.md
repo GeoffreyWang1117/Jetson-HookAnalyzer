@@ -146,10 +146,18 @@ cd Jetson-HookAnalyzer
 
 # 使用 CMake 构建（在 Jetson 上）
 mkdir build && cd build
+
+# 自动检测 CUDA 编译器
+CUDA_COMPILER=$(which nvcc || echo "/usr/local/cuda/bin/nvcc")
+
+# 自适应并行编译
+CORES=$(nproc)
+PARALLEL=$((CORES > 2 ? CORES - 2 : CORES))
+
 cmake -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.6/bin/nvcc \
+      -DCMAKE_CUDA_COMPILER=${CUDA_COMPILER} \
       ..
-make -j6
+make -j${PARALLEL}
 
 # 运行内核测试
 ./examples/kernel_test

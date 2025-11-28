@@ -2,6 +2,7 @@
 #include <iostream>
 #include <chrono>
 #include <algorithm>
+#include <filesystem>
 
 namespace hook_analyzer {
 namespace tensorrt {
@@ -33,6 +34,12 @@ bool TensorRTEngine::loadEngine(const std::string& engine_path) {
     std::ifstream file(engine_path, std::ios::binary);
     if (!file.good()) {
         std::cerr << "Error: Cannot open engine file: " << engine_path << std::endl;
+        std::cerr << "Possible causes:" << std::endl;
+        std::cerr << "  1. File does not exist" << std::endl;
+        std::cerr << "  2. Insufficient permissions" << std::endl;
+        std::cerr << "  3. Incorrect path" << std::endl;
+        std::cerr << "Current working directory: "
+                  << std::filesystem::current_path() << std::endl;
         return false;
     }
 
@@ -104,7 +111,13 @@ void TensorRTEngine::allocateBuffers() {
 
         // Allocate device memory
         size_t bytes = size * sizeof(float);  // Assuming FP32
-        cudaMalloc(&device_buffers_[i], bytes);
+        cudaError_t err = cudaMalloc(&device_buffers_[i], bytes);
+        if (err != cudaSuccess) {
+            std::cerr << "Failed to allocate GPU buffer " << i << " ("
+                      << bytes / (1024.0 * 1024.0) << " MB): "
+                      << cudaGetErrorString(err) << std::endl;
+            throw std::runtime_error("CUDA memory allocation failed");
+        }
         buffer_sizes_[i] = size;
 
         std::cout << "  Allocated buffer " << i << ": "
@@ -131,8 +144,13 @@ bool TensorRTEngine::inferAsync(const std::vector<void*>& inputs,
             }
 
             size_t bytes = buffer_sizes_[i] * sizeof(float);
-            cudaMemcpyAsync(device_buffers_[i], inputs[input_idx],
-                           bytes, cudaMemcpyHostToDevice, stream);
+            cudaError_t err = cudaMemcpyAsync(device_buffers_[i], inputs[input_idx],
+                                             bytes, cudaMemcpyHostToDevice, stream);
+            if (err != cudaSuccess) {
+                std::cerr << "Failed to copy input " << input_idx << " to device: "
+                          << cudaGetErrorString(err) << std::endl;
+                return false;
+            }
 
             context_->setTensorAddress(name, device_buffers_[i]);
             input_idx++;
@@ -159,14 +177,24 @@ bool TensorRTEngine::inferAsync(const std::vector<void*>& inputs,
             }
 
             size_t bytes = buffer_sizes_[i] * sizeof(float);
-            cudaMemcpyAsync(outputs[output_idx], device_buffers_[i],
-                           bytes, cudaMemcpyDeviceToHost, stream);
+            cudaError_t err = cudaMemcpyAsync(outputs[output_idx], device_buffers_[i],
+                                             bytes, cudaMemcpyDeviceToHost, stream);
+            if (err != cudaSuccess) {
+                std::cerr << "Failed to copy output " << output_idx << " from device: "
+                          << cudaGetErrorString(err) << std::endl;
+                return false;
+            }
             output_idx++;
         }
     }
 
     // Synchronize stream
-    cudaStreamSynchronize(stream);
+    cudaError_t err = cudaStreamSynchronize(stream);
+    if (err != cudaSuccess) {
+        std::cerr << "Failed to synchronize CUDA stream: "
+                  << cudaGetErrorString(err) << std::endl;
+        return false;
+    }
 
     return true;
 }

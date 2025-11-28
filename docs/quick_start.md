@@ -20,8 +20,8 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/HookAnalyzer.git
-cd HookAnalyzer
+git clone https://github.com/GeoffreyWang1117/Jetson-HookAnalyzer.git
+cd Jetson-HookAnalyzer
 
 # Build
 ./scripts/build_local.sh release
@@ -215,12 +215,13 @@ sudo usermod -aG video $USER
 
 ## Next Steps
 
-- [Architecture Documentation](architecture.md)
-- [API Reference](api_reference.md)
-- [Custom Kernel Development](custom_kernels.md)
-- [Performance Tuning Guide](performance_tuning.md)
+- [Project Structure](../PROJECT_STRUCTURE.md) - Complete project organization
+- [Experiment 3 Results](experiments/EXPERIMENT3_RESULTS.md) - YOLOv8 TensorRT integration (114.67 FPS)
+- [Experiment 1 Report](experiments/EXPERIMENT1_REPORT.md) - GEMM optimization analysis
+- [Improvement Roadmap](../IMPROVEMENT_ROADMAP.md) - Future development plans
+- [Demo Video](media/hookanalyzer_demo.mp4) - Project demonstration
 
 ## Support
 
-- GitHub Issues: https://github.com/yourusername/HookAnalyzer/issues
-- Email: your.email@example.com
+- GitHub Issues: https://github.com/GeoffreyWang1117/Jetson-HookAnalyzer/issues
+- GitHub Repository: https://github.com/GeoffreyWang1117/Jetson-HookAnalyzer

@@ -148,10 +148,18 @@ cd Jetson-HookAnalyzer
 
 # Build with CMake (on Jetson)
 mkdir build && cd build
+
+# Auto-detect CUDA compiler
+CUDA_COMPILER=$(which nvcc || echo "/usr/local/cuda/bin/nvcc")
+
+# Adaptive parallel compilation
+CORES=$(nproc)
+PARALLEL=$((CORES > 2 ? CORES - 2 : CORES))
+
 cmake -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.6/bin/nvcc \
+      -DCMAKE_CUDA_COMPILER=${CUDA_COMPILER} \
       ..
-make -j6
+make -j${PARALLEL}
 
 # Run kernel tests
 ./examples/kernel_test
